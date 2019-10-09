@@ -7,16 +7,15 @@ import json
 PATH_TO_DATA = 'data/'
 
 app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = 'pyamqp://'
-app.config['CELERY_RESULT_BACKEND'] = 'rpc://'
-
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
+celery = Celery(__name__, backend='amqp', broker='amqp://')
 
 @app.route('/hello_world', methods=['GET'])
 def hello_world():
-    #  return add_together(10, 15)
-    return 'hello\n'
+    # return 'hello world!\n'
+    result = add_together.delay(10, 15).wait()
+    print("RESULT:")
+    print(result.get())
+    # print(result)
 
 @celery.task()
 def add_together(a, b):
@@ -37,7 +36,7 @@ def count_words(path, word):
     return word_count, tweet_count
 
 
-print(count_words(PATH_TO_DATA, 'han'))
+# print(count_words(PATH_TO_DATA, 'han'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
