@@ -6,19 +6,17 @@ import json
 
 PATH_TO_DATA = 'data/'
 
-app = Flask(__name__)
-celery = Celery(__name__, backend='amqp', broker='amqp://')
+flask_app = Flask(__name__)
+celery_app = Celery('app', backend='amqp://', broker='amqp://')
 
-@app.route('/hello_world', methods=['GET'])
+@flask_app.route('/hello_world', methods=['GET'])
 def hello_world():
-    # return 'hello world!\n'
-    result = add_together.delay(10, 15).wait()
-    print("RESULT:")
-    print(result.get())
-    # print(result)
+    result = add.delay(10, 12)
+    result.wait()
+    return str(result.get(timeout=1)) + '\n'
 
-@celery.task()
-def add_together(a, b):
+@celery_app.task()
+def add(a, b):
     return a + b
 
 # Counts number of occurences of `word` in all files in `path`. Assumes that
@@ -39,4 +37,4 @@ def count_words(path, word):
 # print(count_words(PATH_TO_DATA, 'han'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    flask_app.run(host='0.0.0.0', debug=True)
