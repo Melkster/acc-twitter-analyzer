@@ -11,8 +11,10 @@ celery_app = Celery('app', backend='amqp://', broker='amqp://')
 
 @flask_app.route('/', methods=['GET'])
 def count_words_request():
-    word = request.args.get('word')
-    result = count_words.delay(PATH_TO_DATA, word)
+    words = request.args.get('words')
+    word_list = map(strip, words.split(",")) # Create list from query and strip whitespace
+    # TODO: not done, strip() is a method
+    result = count_words.delay(PATH_TO_DATA, words)
     result.wait()
     return str(result.get(timeout=1)) + '\n'
 
