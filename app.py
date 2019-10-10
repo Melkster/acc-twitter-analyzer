@@ -1,30 +1,25 @@
 #!flask/bin/python
-from flask import Flask
+from flask import Flask, request
 from celery import Celery
 import os
 import json
 
 PATH_TO_DATA = 'data/'
 
-app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = 'pyamqp://'
-app.config['CELERY_RESULT_BACKEND'] = 'rpc://'
+flask_app = Flask(__name__)
+celery_app = Celery('app', backend='amqp://', broker='amqp://')
 
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
-
-@app.route('/hello_world', methods=['GET'])
-def hello_world():
-    #  return add_together(10, 15)
-    return 'hello\n'
-
-@celery.task()
-def add_together(a, b):
-    return a + b
+@flask_app.route('/', methods=['GET'])
+def count_words_request():
+    word = request.args.get('word')
+    result = count_words.delay(PATH_TO_DATA, word)
+    result.wait()
+    return str(result.get(timeout=1)) + '\n'
 
 # Counts number of occurences of `word` in all files in `path`. Assumes that
 # all files in `path` contain JSON objects, where each line is one JSON object
 # or empty line.
+@celery_app.task()
 def count_words(path, word):
     word_count = 0
     tweet_count = 0
@@ -37,7 +32,5 @@ def count_words(path, word):
     return word_count, tweet_count
 
 
-print(count_words(PATH_TO_DATA, 'han'))
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    flask_app.run(host='0.0.0.0', debug=True)
