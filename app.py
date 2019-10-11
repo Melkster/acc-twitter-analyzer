@@ -12,23 +12,19 @@ celery_app = Celery('app', backend='amqp://', broker='amqp://')
 
 @flask_app.route('/', methods=['GET'])
 def count_words_request():
-    #  TODO: check if query is correct
-    if request.args.get('words') is None: abort(400)
-    words = request.args.get('words').split(",")
-    response = {
-        'tweet_count': None
-    }
+    words = request.args.get('words')
+    if words is None: abort(400, "Did not receive a query.")
+    else:
+        words = words.split(",")
+        response = { 'tweet_count': None }
 
-    for word in words:
-        #  TODO
-        result = count_words.delay(PATH_TO_DATA, word)
-        result.wait()
-        (word_count, tweet_count) = result.get(timeout=1)
-        response[word + "_count"] = word_count
-        response['tweet_count'] = tweet_count
-    print("response")
-    print(response)
-    return json.dumps(response) + '\n'
+        for word in words:
+            result = count_words.delay(PATH_TO_DATA, word)
+            result.wait()
+            (word_count, tweet_count) = result.get(timeout=1)
+            response[word + "_count"] = word_count
+            response['tweet_count'] = tweet_count
+        return json.dumps(response) + '\n'
 
 # Counts number of occurences of `word` in all files in `path`. Assumes that
 # all files in `path` contain JSON objects, where each line is one JSON object
