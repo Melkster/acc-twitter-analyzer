@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask, request
+from flask import Flask, request, abort
 from celery import Celery
 import os
 import json
@@ -13,6 +13,7 @@ celery_app = Celery('app', backend='amqp://', broker='amqp://')
 @flask_app.route('/', methods=['GET'])
 def count_words_request():
     #  TODO: check if query is correct
+    if request.args.get('words') is None: abort(400)
     words = request.args.get('words').split(",")
     response = {
         'tweet_count': None
@@ -25,7 +26,8 @@ def count_words_request():
         (word_count, tweet_count) = result.get(timeout=1)
         response[word + "_count"] = word_count
         response['tweet_count'] = tweet_count
-    #  print(response)
+    print("response")
+    print(response)
     return json.dumps(response) + '\n'
 
 # Counts number of occurences of `word` in all files in `path`. Assumes that
