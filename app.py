@@ -24,7 +24,7 @@ def count_words_request():
             (word_count, tweet_count) = result.get(timeout=1)
             response[word + "_count"] = word_count
             response['tweet_count'] = tweet_count
-        return json.dumps(response) + '\n'
+        return json.dumps(response)
 
 # Counts number of occurences of `word` in all files in `path`. Assumes that
 # all files in `path` contain JSON objects, where each line is one JSON object
