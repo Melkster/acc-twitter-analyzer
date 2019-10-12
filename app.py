@@ -37,8 +37,10 @@ def count_words(path, word):
         f = open(os.path.join(path, filename), 'r')
         for line in f:
             if line not in ['\n', '\r\n']:
-                word_count += json.loads(line)['text'].upper().count(word.upper())
-                tweet_count += 1
+                tweet = json.loads(line)
+                if 'retweeted_status' not in tweet:
+                    word_count += tweet['text'].upper().count(word.upper())
+                    tweet_count += 1
     return word_count, tweet_count
 
 
