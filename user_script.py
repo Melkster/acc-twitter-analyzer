@@ -1,22 +1,22 @@
-from flask import Flask, request
+import numpy as np
 import sys
 import requests
-import json
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plot
 
+if len(sys.argv) <= 1:
+    exit("Please provide words to look for.")
 
-if len(sys.argv) <= 1: exit("Please provide words to look for.")
-
-server_url = 'http://localhost:5000'
+server_url = 'http://130.238.28.43:5000'
 
 words = sys.argv[1:]
 query = '?words=' + ','.join(words)
 result = requests.get(server_url + query).json()
-print(result)
 
-import numpy as np
-
-x = np.arange(0, 5, 0.1);
-y = np.sin(x)
-
-plt.plot(10, 5)
+# Plot the data:
+height = list(map(lambda w: result[w + '_count'], words))
+y_pos = np.arange(len(words))
+plot.bar(y_pos, height)  # Create bars
+plot.ylabel('Word frequency')  # Y-label
+plot.suptitle('Total number of parsed tweets: ' + str(result['tweet_count']), fontsize=14)
+plot.xticks(y_pos, words)  # Create names on the x-axis
+plot.show()  # Show graphic
