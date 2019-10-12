@@ -13,10 +13,11 @@ celery_app = Celery('app', backend='amqp://', broker='amqp://')
 @flask_app.route('/', methods=['GET'])
 def count_words_request():
     words = request.args.get('words')
-    if words is None: abort(400, "Did not receive a query.")
+    if words is None:
+        abort(400, "Did not receive a query.")
     else:
         words = words.split(",")
-        response = { 'tweet_count': None }
+        response = {'tweet_count': None}
 
         for word in words:
             result = count_words.delay(PATH_TO_DATA, word)
