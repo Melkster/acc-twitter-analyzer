@@ -42,7 +42,7 @@ def count_words(path, word):
                 if 'retweeted_status' not in tweet:
                     word_count += tweet['text'].upper().count(word.upper())
                     tweet_count += 1
-    return word_count, tweet_count
+    return (word_count, tweet_count)
 
 
 if __name__ == '__main__':

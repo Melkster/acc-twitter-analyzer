@@ -1,6 +1,6 @@
 MAKEFLAGS+="j 2"
 
-run: celery flask
+run_server: celery flask
 
 flask:
 	python3 app.py
