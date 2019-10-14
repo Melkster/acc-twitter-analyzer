@@ -19,6 +19,6 @@ Twitter analyzer for Lab 3 in the course Applied Cloud Computing. The applicatio
 
 ## Usage
 
-To download the twitter data, run `make install`. To set up the server, run `make run_server`. Make sure that the `server_url` in [`app.py`](./app.py) is set to the server's IP adress.
+To download the twitter data, run `make install`. To set up the server, run `make run_server`. Make sure that the `server_url` in [`user_script.py`](./user_script.py) is set to the server's IP adress.
 
 On the client side, to send a request run `python3 user_script.py *words to query*` (make sure that you've cloned this repo to the client as well).
