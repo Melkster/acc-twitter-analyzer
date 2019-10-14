@@ -8,9 +8,6 @@ flask:
 celery:
 	celery -A app worker --loglevel=info
 
-run_user_script:
-	python3 user_script.py
-
 install:
 	curl http://user.it.uu.se/~meos6185/data.tar.gz | tar xz
 
